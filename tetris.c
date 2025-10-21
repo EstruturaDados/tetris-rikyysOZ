@@ -16,6 +16,12 @@ typedef struct {
     int total;
 } Fila;
 
+typedef struct 
+{   peca itens[3];
+    int topo;
+} Pilha;
+
+
 void inicializaFila(Fila *f) {
     f->inicio = 0;
     f->fim = 0;
@@ -55,7 +61,7 @@ void imprimirFila(Fila *f) {
         printf("Fila vazia!\n");
         return;
     }
-    printf("Fila de peças:\n");    
+    printf("Fila de peças: ");    
     for (int i = 0, idx = f->inicio; i < f->total; i++, idx = (idx + 1) % MAX) {
         printf("[%s - %d] ", f->itens[idx].nome, f->itens[idx].ID);
     }
@@ -78,7 +84,7 @@ peca gerarPecaAleatoria(int *id) {
 }
 
 // Função para gerar várias peças aleatórias iniciais
-void gerarPecasIniciais(Fila *f, int quantidade, int *id) {
+void gerarPecas(Fila *f, int quantidade, int *id) {
     //printf("Gerando %d peças aleatórias...\n", quantidade);
     
     for (int i = 0; i < quantidade; i++) {
@@ -92,46 +98,82 @@ void gerarPecasIniciais(Fila *f, int quantidade, int *id) {
     }
 }
 
+
+void inicializarPilha(Pilha *p) {
+    p->topo = -1;
+}
+
+int pilhaVazia(Pilha *p) {
+    return p->topo == -1;
+}
+
+int pilhaCheia(Pilha *p) {
+    return p->topo == 3 - 1;
+}
+
+void push(Pilha *p, peca nova) {
+    if (pilhaCheia(p)) {
+        printf("Pilha cheia. Não é possível inserir.\n");
+        return;
+    }
+
+    p->topo++;
+    p->itens[p->topo] = nova;
+}
+
+void pop(Pilha *p, peca *removida) {
+    if (pilhaVazia(p)) {
+        printf("Pilha vazia. Não é possível remover.\n");
+        return;
+    }
+
+    *removida = p->itens[p->topo];
+    p->topo--;
+}
+
+void mostrarPilha(Pilha *p) {
+    if (pilhaVazia(p)) {
+        printf("Pilha vazia.\n");
+        return;
+    }
+
+    printf("Peças reservadas (topo -> base): ");
+    for (int i = p->topo; i >= 0; i--) {
+        printf("[%s - %d] ", p->itens[i].nome, p->itens[i].ID);
+    }
+    printf("\n");
+}
+
+
 int main() 
 {
-
+    peca removida;
     srand(time(NULL));
 
     Fila fila;
+    Pilha pilha;
     inicializaFila(&fila);
+    inicializarPilha(&pilha);
     int opc;
     int id = 0;
 
-    // Gera 4 peças aleatórias no início
-    gerarPecasIniciais(&fila, 4, &id);
+    gerarPecas(&fila, 5, &id);
     printf("\n");
-    imprimirFila(&fila);
 
     do 
-    {
-        printf("\nEscolha uma opção:\n1-Inserir peça\n2-Remover peça\n0-Sair\n");
+    {   
+        imprimirFila(&fila);
+        mostrarPilha(&pilha);
+
+        printf("\nEscolha uma opção:\n1 - jogar peça\n2 - Reservar peça\n3 - Usar peça reservada\n0 - Sair\n");
         printf("Opção: ");
         scanf("%d", &opc);
+        printf("\n");
+
 
         switch(opc) 
         {
             case 1: {
-                if (filaCheia(&fila))
-                {
-                    printf("Fila cheia, não é possível inserir nova peça!\n");
-                    break;
-                }
-                
-                peca novaPeca;
-                printf("Digite o nome da peça: ");
-                scanf("%s", novaPeca.nome);
-                novaPeca.ID = id++;
-                inserir(&fila, novaPeca);
-                imprimirFila(&fila);
-                break;
-            }   
-            
-            case 2: {
                 if (filaVazia(&fila))
                 {
                     printf("Fila Vazia\n");
@@ -139,8 +181,39 @@ int main()
                 }
                 peca removida;
                 remover(&fila, &removida);
-                printf("Peça removida: [%s - %d]\n", removida.nome, removida.ID);
-                imprimirFila(&fila);
+                printf("Peça Jogada: [%s - %d]\n\n", removida.nome, removida.ID);
+
+                gerarPecas(&fila, 1, &id);
+
+                break;
+            }   
+            
+            case 2: {
+                if (pilhaCheia(&pilha))
+                {
+                    printf("Pilha de reserva cheia, não é possível reservar mais peças!\n\n");
+                    break;
+                }
+                peca removida;
+                remover(&fila, &removida);
+                push(&pilha, removida);
+                printf("Peça reservada: [%s - %d]\n\n", removida.nome, removida.ID);
+
+                gerarPecas(&fila, 1, &id);
+
+                break;
+            }
+
+            case 3: {
+                if (pilhaVazia(&pilha))
+                {
+                    printf("Pilha Vazia!\n");
+                    break;
+                }
+
+                pop(&pilha, &removida);
+                printf("Peça reservada usada: [%s - %d]\n", removida.nome, removida.ID);
+
                 break;
             }
             
