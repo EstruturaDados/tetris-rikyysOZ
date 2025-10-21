@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef struct {
     char nome[1]; 
@@ -61,30 +62,59 @@ void imprimirFila(Fila *f) {
     printf("\n");
 }
 
-int main() {
+peca gerarPecaAleatoria(int *id) {
+    peca novaPeca;
+    const char *tiposPecas[] = {"I", "O", "T", "L"};
+    int numTipos = 4; // Número de tipos disponíveis
+    
+    // Sorteia um tipo aleatório
+    int indiceAleatorio = rand() % numTipos;
+    
+    // Copia o nome da peça sorteada
+    sprintf(novaPeca.nome, "%s", tiposPecas[indiceAleatorio]);
+    novaPeca.ID = (*id)++;
+    
+    return novaPeca;
+}
+
+// Função para gerar várias peças aleatórias iniciais
+void gerarPecasIniciais(Fila *f, int quantidade, int *id) {
+    //printf("Gerando %d peças aleatórias...\n", quantidade);
+    
+    for (int i = 0; i < quantidade; i++) {
+        if (filaCheia(f)) {
+            printf("Fila cheia! Não foi possível gerar todas as peças.\n");
+            break;
+        }
+        peca novaPeca = gerarPecaAleatoria(id);
+        inserir(f, novaPeca);
+        //printf("Peça gerada: [%s - %d]\n", novaPeca.nome, novaPeca.ID);
+    }
+}
+
+int main() 
+{
+
+    srand(time(NULL));
+
     Fila fila;
     inicializaFila(&fila);
     int opc;
     int id = 0;
 
-    peca p1 = {"T", id++};
-    peca p2 = {"O", id++};
-    peca p3 = {"L", id++};
-    peca p4 = {"I", id++};
-
-    inserir(&fila, p1);
-    inserir(&fila, p2);
-    inserir(&fila, p3);
-    inserir(&fila, p4);
-
+    // Gera 4 peças aleatórias no início
+    gerarPecasIniciais(&fila, 4, &id);
+    printf("\n");
     imprimirFila(&fila);
 
-    do {
+    do 
+    {
         printf("\nEscolha uma opção:\n1-Inserir peça\n2-Remover peça\n0-Sair\n");
         printf("Opção: ");
         scanf("%d", &opc);
 
-        switch(opc) {
+        switch(opc) 
+        {
             case 1: {
                 if (filaCheia(&fila))
                 {
@@ -104,7 +134,7 @@ int main() {
             case 2: {
                 if (filaVazia(&fila))
                 {
-                    printf("Fila Vazia, não é possível remover nova peça!\n");
+                    printf("Fila Vazia\n");
                     break;
                 }
                 peca removida;
