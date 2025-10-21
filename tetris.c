@@ -138,7 +138,7 @@ void definirNaFila(Fila *f, int pos, peca p) {
 }
 
 // Função para trocar peça da frente da fila com o topo da pilha
-void trocarFrenteComTopo(Fila *fila, Pilha *pilha) {
+void TrocarPecaAtual(Fila *fila, Pilha *pilha) {
     if (filaVazia(fila)) {
         printf("Fila vazia! Não é possível trocar.\n");
         return;
@@ -157,7 +157,7 @@ void trocarFrenteComTopo(Fila *fila, Pilha *pilha) {
 }
 
 // Função para trocar os 3 primeiros da fila com as 3 peças da pilha
-void trocarTresComTres(Fila *fila, Pilha *pilha) {
+void trocaMultipla(Fila *fila, Pilha *pilha) {
     if (fila->total < 3) {
         printf("Fila não tem 3 peças! Não é possível trocar.\n");
         return;
@@ -292,12 +292,12 @@ int main()
             }
             
             case 5: {
-                trocarFrenteComTopo(&fila, &pilha);
+                TrocarPecaAtual(&fila, &pilha);
                 break;
             }
             
             case 6: {
-                trocarTresComTres(&fila, &pilha);
+                trocaMultipla(&fila, &pilha);
                 break;
             }
             
